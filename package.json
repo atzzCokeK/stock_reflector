@@ -1,0 +1,23 @@
+{
+  "name": "stock_reflector",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atzzCokeK/stock_reflector.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atzzCokeK/stock_reflector/issues"
+  },
+  "homepage": "https://github.com/atzzCokeK/stock_reflector#readme",
+  "devDependencies": {
+    "@google/clasp": "^2.4.1",
+    "@types/google-apps-script": "^1.0.37"
+  }
+}
