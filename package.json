@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clasp" : "clasp"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
   "devDependencies": {
     "@google/clasp": "^2.4.1",
     "@types/google-apps-script": "^1.0.37"
+  },
+  "dependencies": {
+    "clasp": "^1.0.0"
   }
 }
