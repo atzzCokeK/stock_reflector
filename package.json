@@ -31,5 +31,8 @@
   },
   "dependencies": {
     "clasp": "^1.0.0"
+  },
+  "volta": {
+    "node": "17.3.0"
   }
 }

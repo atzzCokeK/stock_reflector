@@ -1,13 +1,56 @@
+import { ColorMe } from './ColorMe'
+import { GASService } from './GASService'
+import { Stocks } from './Model/Stock'
+
 const execute = () => {
-  const scriptProperties: GoogleAppsScript.Properties.Properties = PropertiesService.getScriptProperties()
-  const colorMeAccessToken: string | null = scriptProperties.getProperty('COLORME_ACCESS_TOKEN')
-  const sheetId: string | null = scriptProperties.getProperty('STOCK_SHEET_ID')
+  const colorMeAccessToken: string | null = scriptProperties.getProperty(
+    'PROD_COLORME_ACCESS_TOKEN'
+  )
+  const sheetId: string | null = scriptProperties.getProperty(
+    'PROD_STOCK_SHEET_ID'
+  )
 
   if (!colorMeAccessToken || !sheetId) {
     throw new Error('ColorMeAccessTokenか、SheetIdを取得できていません。')
   }
 
+  const [gasService, colorMe, stocks] = init(colorMeAccessToken, sheetId)
+
+  gasService.closeSpreadsheet()
+
+  colorMe.update(stocks)
+}
+
+const test = () => {
+  const colorMeAccessToken: string | null = scriptProperties.getProperty(
+    'DEV_COLORME_ACCESS_TOKEN'
+  )
+  const sheetId: string | null =
+    scriptProperties.getProperty('DEV_STOCK_SHEET_ID')
+
+  if (!colorMeAccessToken || !sheetId) {
+    throw new Error('ColorMeAccessTokenか、SheetIdを取得できていません。')
+  }
+
+  const [gasService, colorMe, stocks] = init(colorMeAccessToken, sheetId)
+
+  gasService.closeSpreadsheet()
+
+  colorMe.update(stocks)
+}
+
+const scriptProperties: GoogleAppsScript.Properties.Properties =
+  PropertiesService.getScriptProperties()
+
+const init = (
+  colorMeAccessToken: string,
+  sheetId: string
+): [gasService: GASService, ColorMe: ColorMe, stocks: Stocks] => {
   const gasService = new GASService(sheetId)
+  const colorMe: ColorMe = new ColorMe(colorMeAccessToken)
+
   const stockSheet = gasService.getSheet()
-  const stockData = gasService.getStockRawData(stockSheet)
+  const stocks: Stocks = gasService.getStockRawData(stockSheet)
+
+  return [gasService, colorMe, stocks]
 }
