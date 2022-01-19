@@ -2,7 +2,23 @@ import { ColorMe } from './ColorMe'
 import { GASService } from './GASService'
 import { Stocks } from './Model/Stock'
 
-const execute = () => {
+const scriptProperties: GoogleAppsScript.Properties.Properties =
+  PropertiesService.getScriptProperties()
+
+const init = (
+  colorMeAccessToken: string,
+  sheetId: string
+): [gasService: GASService, ColorMe: ColorMe, stocks: Stocks] => {
+  const gasService = new GASService(sheetId)
+  const colorMe: ColorMe = new ColorMe(colorMeAccessToken)
+
+  const stockSheet = gasService.getSheet()
+  const stocks: Stocks = gasService.getStockRawData(stockSheet)
+
+  return [gasService, colorMe, stocks]
+}
+
+const executeProd = () => {
   const colorMeAccessToken: string | null = scriptProperties.getProperty(
     'PROD_COLORME_ACCESS_TOKEN'
   )
@@ -21,7 +37,7 @@ const execute = () => {
   colorMe.update(stocks)
 }
 
-const test = () => {
+const executeDev = () => {
   const colorMeAccessToken: string | null = scriptProperties.getProperty(
     'DEV_COLORME_ACCESS_TOKEN'
   )
@@ -37,20 +53,4 @@ const test = () => {
   gasService.closeSpreadsheet()
 
   colorMe.update(stocks)
-}
-
-const scriptProperties: GoogleAppsScript.Properties.Properties =
-  PropertiesService.getScriptProperties()
-
-const init = (
-  colorMeAccessToken: string,
-  sheetId: string
-): [gasService: GASService, ColorMe: ColorMe, stocks: Stocks] => {
-  const gasService = new GASService(sheetId)
-  const colorMe: ColorMe = new ColorMe(colorMeAccessToken)
-
-  const stockSheet = gasService.getSheet()
-  const stocks: Stocks = gasService.getStockRawData(stockSheet)
-
-  return [gasService, colorMe, stocks]
 }

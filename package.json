@@ -6,7 +6,7 @@
   "scripts": {
     "lint:eslint": "eslint . --ext ts,tsx",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clasp": "clasp"
+    "deploy": "clasp push"
   },
   "repository": {
     "type": "git",
