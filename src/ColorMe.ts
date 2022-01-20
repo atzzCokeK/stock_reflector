@@ -1,4 +1,4 @@
-import { Stock, Stocks } from './Model/Stock'
+import { ColorMeId, Stocks, Variants } from './Model/Stock'
 
 export class ColorMe {
   accessToken: string
@@ -7,18 +7,19 @@ export class ColorMe {
   }
 
   // 共通化されたURL生成関数
-  private makeUrl = (productId: number): string =>
+  private makeUrl = (productId: string): string =>
     `https://api.shop-pro.jp/v1/products/${productId}`
 
   public update = (stocks: Stocks) => {
-    stocks.forEach((stock: Stock) => {
-      const url = this.makeUrl(stock.colorMeId)
+    stocks.forEach((variants: Variants, colorMeId: ColorMeId) => {
+      const url = this.makeUrl(colorMeId)
+
       try {
+        console.log('colorMeId:', colorMeId)
+        console.log('options:', this.makeOptions(variants))
+
         const response = JSON.parse(
-          UrlFetchApp.fetch(
-            url,
-            this.options(stock.quantity, stock.variant)
-          ).getContentText()
+          UrlFetchApp.fetch(url, this.makeOptions(variants)).getContentText()
         )
 
         console.log('ColorMeへのリクエスト結果', response)
@@ -34,30 +35,34 @@ export class ColorMe {
     })
   }
 
-  private options = (
-    quantity: number,
-    variant: string
+  private makeOptions = (
+    variants: Variants
   ): GoogleAppsScript.URL_Fetch.URLFetchRequestOptions => {
     const headers = {
       Authorization: `Bearer ${this.accessToken}`,
       'Content-Type': 'application/json'
     }
 
-    const payload = (amount: number, variant: string): string => {
-      if (variant === '' || variant === '-') {
+    const payload = (): string => {
+      if (variants.size === 1) {
         return JSON.stringify({
-          product: { stocks: amount }
+          product: { stocks: variants.get('-') }
         })
       }
 
+      const list: { option1_value: string; stocks: number }[] = []
+      variants.forEach((quantity, key) => {
+        list.push({ option1_value: key, stocks: quantity })
+      })
+
       return JSON.stringify({
-        product: { variants: { option1_value: variant, stocks: amount } }
+        product: { variants: list }
       })
     }
 
     return {
       method: 'put',
-      payload: payload(quantity, variant),
+      payload: payload(),
       headers: headers,
       muteHttpExceptions: true
     }

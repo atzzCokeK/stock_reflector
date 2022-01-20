@@ -1,4 +1,4 @@
-import { Stock, Stocks } from './Model/Stock'
+import { Stocks, Variants } from './Model/Stock'
 
 export class GASService {
   sheetId: string
@@ -50,24 +50,52 @@ export class GASService {
           // 販売コードなし
           stockRow[0] !== '-' &&
           // ColorMeコードなし
-          stockRow[3] !== '-' &&
+          this.getColorMeId(stockRow) !== '-' &&
           // 反映しないアイテムを除く
           !stockRow[4] &&
           // 在庫数が存在している
-          stockRow[5]
+          this.getQuantity(stockRow) !== ''
         )
       })
 
     console.log('反映するアイテム数', stockRows.length)
     console.log(stockRows)
 
-    const stocks: Stocks = new Set(
-      stockRows.map(
-        (stockRow) =>
-          new Stock(stockRow[0], stockRow[5], stockRow[3], stockRow[2])
-      )
-    )
+    const stocks: Stocks = this.newStocksFromRawData(stockRows)
 
     return stocks
   }
+
+  private newStocksFromRawData = (stockRows: any[][]): Stocks => {
+    const newStocks: Stocks = new Map()
+
+    stockRows.forEach((stockRow) => {
+      const alreadyExistedVariants = newStocks.get(this.getColorMeId(stockRow))
+
+      if (alreadyExistedVariants) {
+        const nextVariants = alreadyExistedVariants.set(
+          this.getVariant(stockRow),
+          this.getQuantity(stockRow)
+        )
+
+        newStocks.set(this.getColorMeId(stockRow), nextVariants)
+
+        return
+      }
+
+      const newVariants: Variants = new Map()
+      newStocks.set(
+        this.getColorMeId(stockRow),
+        newVariants.set(this.getVariant(stockRow), this.getQuantity(stockRow))
+      )
+
+      return
+    })
+
+    return newStocks
+  }
+
+  private getColorMeId = (stockRow: any[]) => stockRow[3]
+  private getQuantity = (stockRow: any[]) => stockRow[5]
+  private getVariant = (stockRow: any[]) => stockRow[2]
 }

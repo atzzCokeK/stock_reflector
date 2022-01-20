@@ -1,20 +1,6 @@
-export class Stock {
-  id: number
-  quantity: number
-  colorMeId: number
-  variant: string
+export type Variant = string
+export type ColorMeId = string
+export type Quantity = number
 
-  constructor(
-    id: number,
-    quantity: number,
-    colorMeId: number,
-    variant: string
-  ) {
-    this.id = id
-    this.quantity = quantity
-    this.colorMeId = colorMeId
-    this.variant = variant
-  }
-}
-
-export type Stocks = Set<Stock>
+export type Variants = Map<Variant, Quantity>
+export type Stocks = Map<ColorMeId, Variants>

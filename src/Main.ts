@@ -35,6 +35,8 @@ const executeProd = () => {
   gasService.closeSpreadsheet()
 
   colorMe.update(stocks)
+
+  console.log('更新完了')
 }
 
 const executeDev = () => {
